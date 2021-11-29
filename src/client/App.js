@@ -10,6 +10,9 @@ export default class App extends Component {
   render() {
     return (
       <>
+      <div className="heading">
+        <h1>Zendesk Ticketing Viewer</h1>
+      </div>
       <Router>
         <Switch>
           <Route path="/" exact component={TicketList} />

@@ -1,10 +1,9 @@
-/* h1 {
-  color: green;
-} */
+.heading{
+  display: flex;
+  justify-content: center;
+}
 
 body {
-  /* text-align: center; */
-  /* margin: auto; */
   width: 100%;
   margin: 0;
 }

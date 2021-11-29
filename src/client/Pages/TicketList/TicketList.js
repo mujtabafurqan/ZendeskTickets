@@ -31,7 +31,7 @@ const TicketList = props => {
     const getActiveTickets = (pageNumber, tickets) => {
         setCurrPage(pageNumber);
         var activeTickets = [];
-        for(var i = (pageNumber-1); i < (pageNumber); i++) {
+        for(var i = (pageNumber-1) * 25; i < (pageNumber) * 25; i++) {
             activeTickets.push(tickets[i]);
         }
         setActiveTickets(activeTickets);
@@ -48,8 +48,11 @@ const TicketList = props => {
         <>
             <div className="container">
                 {!isError && <div className="ticketList">
-                    <MyPagination totPages={tickets.length} currentPage={currPage} pageClicked={(ele) => getActiveTickets(ele,tickets)}>
-                        <ListGroup as="ol" numbered>
+                    <div>
+                        You are viewing {activeTickets.length} of {tickets.length} tickets.
+                    </div>
+                    <MyPagination totPages={Math.ceil(tickets.length/25)} currentPage={currPage} pageClicked={(ele) => getActiveTickets(ele,tickets)}>
+                        <ListGroup as="ol">
                             {activeTickets.map(ticket => (
                                 <ListGroup.Item
                                     as="li"
@@ -71,7 +74,7 @@ const TicketList = props => {
                     </div>
                 }
                 {isError && <div className="error">
-                    <h1>Error</h1>
+                    <h1>oh no! something went wrong :(</h1>
                     <p>{error.message}</p>
                 </div>}
             </div>
