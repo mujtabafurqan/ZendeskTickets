@@ -55,6 +55,7 @@ const TicketList = props => {
                                     as="li"
                                     className="d-flex justify-content-between align-items-start"
                                     onClick={() => showTicket(ticket)}
+                                    key={ticket.id}
                                 >
                                     <div className="ms-2 me-auto">
                                     <div className="fw-bold">{ticket.subject}</div>
