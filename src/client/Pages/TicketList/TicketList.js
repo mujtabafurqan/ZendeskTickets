@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ListGroup, Badge } from 'react-bootstrap';
-import MyPagination from '../../Helpers/MyPagination';
+import { ListGroup, Badge, Button } from 'react-bootstrap';
 import Api from '../../Helpers/api';
 import './TicketList.css';
 
@@ -9,17 +8,22 @@ const TicketList = props => {
     var options = {year: 'numeric', month: 'long', day: 'numeric' };
     
     const [tickets, setTickets] = useState([]);
-    const [activeTickets, setActiveTickets] = useState([]);
-    const [currPage, setCurrPage] = React.useState(1);
     const [error, setError] = useState(null);
     const [isError, setIsError] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
+    const [response, setResponse] = useState(null);
+    const [hasMore, setHasMore] = useState(true);
+    const [hasPrevious, setHasPrevious] = useState(false);
     
     useEffect(() => {
+        getTotalTicketCount();
          api.getTicketList()
             .then(res => {
                 console.log(res);
                 setTickets(res.data.tickets);
-                getActiveTickets(1, res.data.tickets);
+                setResponse(res.data);
+                setHasMore(res.data.meta.has_more);
+                setHasPrevious(true);
             })
             .catch(err => {
                 setError(err);
@@ -28,14 +32,6 @@ const TicketList = props => {
             );
     }, []);
 
-    const getActiveTickets = (pageNumber, tickets) => {
-        setCurrPage(pageNumber);
-        var activeTickets = [];
-        for(var i = (pageNumber-1) * 25; i < (pageNumber) * 25; i++) {
-            activeTickets.push(tickets[i]);
-        }
-        setActiveTickets(activeTickets);
-    }
     const showTicket = (ticket) => {
         props.history.push({
             pathname: '/details',
@@ -44,16 +40,61 @@ const TicketList = props => {
             },
           });
     }
+    
+    const getTotalTicketCount = () => {
+        api.getTotalTicketCount()
+            .then(res => {
+                console.log(res);
+                setTotalCount(res.data.value);
+            })
+            .catch(err => {
+                setError(err);
+                setIsError(true);
+            }
+            );
+    }
+
+    const getNext = () => {
+        api.getNext(response.links.next)
+            .then(res => {
+                setTickets(res.data.tickets);
+                setResponse(res.data);
+                setHasMore(res.data.meta.has_more);
+                setHasPrevious(true);
+            })
+            .catch(err => {
+                setError(err);
+                setIsError(true);
+            }
+            );
+    }
+
+    const getPrevious = () => {
+        api.getNext(response.links.prev)
+            .then(res => {
+                if(res.data.tickets.length === 0) {
+                    setHasPrevious(false);
+                }else{
+                    setTickets(res.data.tickets);
+                    setResponse(res.data);
+                    setHasMore(res.data.meta.has_more);
+                }
+            })
+            .catch(err => {
+                setError(err);
+                setIsError(true);
+            }
+            );
+    }
     return (
         <>
             <div className="container">
                 {!isError && <div className="ticketList">
                     <div>
-                        You are viewing {activeTickets.length} of {tickets.length} tickets.
+                        You are viewing {tickets.length} of {totalCount} tickets.
                     </div>
-                    <MyPagination totPages={Math.ceil(tickets.length/25)} currentPage={currPage} pageClicked={(ele) => getActiveTickets(ele,tickets)}>
-                        <ListGroup as="ol">
-                            {activeTickets.map(ticket => (
+                        {tickets!=null && <ListGroup as="ol">
+                            {tickets.map(ticket => (
                                 <ListGroup.Item
                                     as="li"
                                     className="d-flex justify-content-between align-items-start"
@@ -70,7 +111,11 @@ const TicketList = props => {
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
-                    </MyPagination>
+                       }
+                        <div className='navigation-buttons'>
+                            <Button variant="primary" disabled={!hasPrevious} onClick={() => getPrevious()}>Previous 25</Button>
+                            <Button variant="primary" disabled={!hasMore} onClick={() => getNext()}>Next 25</Button>
+                        </div>
                     </div>
                 }
                 {isError && <div className="error">

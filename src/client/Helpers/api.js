@@ -20,7 +20,28 @@ export default class Api {
       };
 
       getTicketList = () => {
-        // return this.init().get("/api/tickets/list", { params: params });
         return this.init().get("/api/tickets/list");
+      };
+
+      getTotalTicketCount = () => {
+        return this.init().get("/api/tickets/count");
+      };
+
+      getNext = link => {
+        return this.init().get("/api/tickets/getNext", 
+        {
+          params: {
+            link
+          }
+        })
+      };
+
+      getPrevious = link => {
+        return this.init().get("/api/tickets/getPrevious", 
+        {
+          params: {
+            link
+          }
+        })
       };
 }
