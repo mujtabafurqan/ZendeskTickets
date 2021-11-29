@@ -1,0 +1,22 @@
+.details-container{
+    width: 80%;
+    height: 100%;
+    margin: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.details-row{
+    display: flex;
+}
+
+.details-key{
+    width: 30%;
+    font-weight: 700;
+    padding: 20px;
+}
+
+.details-value{
+    width: 70%;
+    padding: 20px;
+}
