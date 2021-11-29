@@ -11,6 +11,8 @@ const TicketList = props => {
     const [tickets, setTickets] = useState([]);
     const [activeTickets, setActiveTickets] = useState([]);
     const [currPage, setCurrPage] = React.useState(1);
+    const [error, setError] = useState(null);
+    const [isError, setIsError] = useState(false);
     
     useEffect(() => {
          api.getTicketList()
@@ -19,8 +21,10 @@ const TicketList = props => {
                 setTickets(res.data.tickets);
                 getActiveTickets(1, res.data.tickets);
             })
-            .catch(err => 
-                console.log(err)
+            .catch(err => {
+                setError(err);
+                setIsError(true);
+            }
             );
     }, []);
 
@@ -43,8 +47,8 @@ const TicketList = props => {
     return (
         <>
             <div className="container">
-                <div className="ticketList">
-                <MyPagination totPages={tickets.length} currentPage={currPage} pageClicked={(ele) => getActiveTickets(ele,tickets)}>
+                {!isError && <div className="ticketList">
+                    <MyPagination totPages={tickets.length} currentPage={currPage} pageClicked={(ele) => getActiveTickets(ele,tickets)}>
                         <ListGroup as="ol" numbered>
                             {activeTickets.map(ticket => (
                                 <ListGroup.Item
@@ -63,7 +67,12 @@ const TicketList = props => {
                             ))}
                         </ListGroup>
                     </MyPagination>
-                </div>
+                    </div>
+                }
+                {isError && <div className="error">
+                    <h1>Error</h1>
+                    <p>{error.message}</p>
+                </div>}
             </div>
         </>
     )

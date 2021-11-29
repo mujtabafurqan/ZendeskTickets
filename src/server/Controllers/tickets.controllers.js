@@ -1,14 +1,15 @@
 const axios = require('axios');
 const { base64encode} = require('nodejs-base64');
+const config = require('dotenv').config();
 
 const createMany = (req, res) => {
     const tickets  = req.body;
 
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + base64encode('mujtabauddinfurqan@gmail.com:#fV5tb$GRi-X5Yu'),
+        'Authorization': 'Basic ' + base64encode(`${process.env.ZENDESK_EMAIL}:${process.env.ZENDESK_PASSWORD}`),
       };
-      axios.post('https://zccmujtaba.zendesk.com/api/v2/tickets/create_many', tickets, {
+      axios.post(`https://${process.env.ZENDESK_URL}/api/v2/tickets/create_many`, tickets, {
           headers: headers
         })
         .then((response) => {
@@ -24,9 +25,9 @@ const createMany = (req, res) => {
 const list = (req, res) => {
     const headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + base64encode('mujtabauddinfurqan@gmail.com:#fV5tb$GRi-X5Yu'),
+        'Authorization': 'Basic ' + base64encode(`${process.env.ZENDESK_EMAIL}:${process.env.ZENDESK_PASSWORD}`),
     };
-    axios.get('https://zccmujtaba.zendesk.com/api/v2/tickets?page[size]=2', {
+    axios.get(`https://${process.env.ZENDESK_URL}/api/v2/tickets`, {
         headers: headers
     })
     .then((response) => {
